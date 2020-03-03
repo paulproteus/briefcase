@@ -6,6 +6,7 @@
 /build
 docs/_build/
 distribute-*
+pip-wheel-metadata
 .DS_Store
 .python-version
 .pytest_cache
