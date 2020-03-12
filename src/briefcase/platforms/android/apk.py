@@ -176,13 +176,39 @@ class ApkRunCommand(ApkMixin, RunCommand):
             required=False,
         )
 
-    def run_app(self, app: BaseConfig, **kwargs):
+    def run_app(self, app: BaseConfig, device=None, **kwargs):
         """
         Start the application.
 
         :param app: The config object for the app
+        :param device: The device to target. If ``None``, the user will
+            be asked to re-run the command selecting a specific device.
         :param base_path: The path to the project directory.
         """
+        if device is None:
+            raise BriefcaseCommandError("""
+Please specify a specific device on which to run the app by passing
+`-d device_name`. You can get a list of valid devices by running
+this command and looking in the first column of output.
+
+$ {adb} devices -l
+
+If you do not see any devices, you can create one by running these commands:
+
+$ {tools_bin}/sdkmanager "platforms;android-28" "system-images;android-28;default;x86" "emulator" "platform-tools"
+
+$ {tools_bin}/avdmanager --verbose create avd --name robotfriend2 --abi x86 --package 'system-images;android-29;default;x86' --device pixel
+
+$ {emulator} -avd robotfriend &
+
+Then run this command to find out the device name.
+
+$ {adb} devices -l
+""".lstrip().format(
+            adb=self.android_sdk_path / "platform-tools" / "adb",
+            emulator=self.android_sdk_path / "emulator" / "emulator",
+            tools_bin=self.android_sdk_path / "tools" / "bin",
+        ))
         import pdb; pdb.set_trace()
         # TODO: Respect `-d`
         #
