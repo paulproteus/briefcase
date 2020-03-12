@@ -197,11 +197,12 @@ If you do not see any devices, you can create one by running these commands:
 
 $ {tools_bin}/sdkmanager "platforms;android-28" "system-images;android-28;default;x86" "emulator" "platform-tools"
 
-$ {tools_bin}/avdmanager --verbose create avd --name robotfriend2 --abi x86 --package 'system-images;android-29;default;x86' --device pixel
+$ {tools_bin}/avdmanager --verbose create avd --name robotfriend --abi x86 --package 'system-images;android-28;default;x86' --device pixel
 
 $ {emulator} -avd robotfriend &
 
-Then run this command to find out the device name.
+Then use adb find out the device name by running this command and looking
+in the first column of output.
 
 $ {adb} devices -l
 """.lstrip().format(
