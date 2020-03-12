@@ -166,6 +166,16 @@ class ApkBuildCommand(ApkMixin, BuildCommand):
 class ApkRunCommand(ApkMixin, RunCommand):
     description = "Run a Linux AppImage."
 
+    def add_options(self, parser):
+        super().add_options(parser)
+        parser.add_argument(
+            '-d',
+            '--device',
+            dest='device',
+            help='The device to target, formatted so that `adb` will accept it',
+            required=False,
+        )
+
     def run_app(self, app: BaseConfig, **kwargs):
         """
         Start the application.
@@ -173,7 +183,7 @@ class ApkRunCommand(ApkMixin, RunCommand):
         :param app: The config object for the app
         :param base_path: The path to the project directory.
         """
-        raise NotImplementedError()
+        import pdb; pdb.set_trace()
         # TODO: Respect `-d`
         #
         # Find all possible targets:
