@@ -4,24 +4,35 @@ import os
 from briefcase.exceptions import BriefcaseCommandError
 
 
-def get_devices(sdk_path, sub=subprocess):
-    # Add our `adb` to start of the path.
-    env = dict(os.environ)
-    env['PATH'] = str(sdk_path / 'platform-tools') + ':' + env.get('PATH', '')
-    try:
-        output = sub.check_output(['adb', 'devices'], env=env)
-    except subprocess.CalledProcessError:
-        raise BriefcaseCommandError("Unable to run `adb devices`")
+def install_apk(sdk_path, device_name, apk_path, sub=subprocess):
+    """
+    Install an APK file on an Android device.
 
-    results = []
-    for line in output.split('\n'):
-        line = line.strip()
-        if not line:
-            continue
-        if line == 'List of devices attached':
-            continue
-        if '\t' in line:
-            first, rest = line.split('\t', 1)
-            if rest.strip() == 'device':
-                results.append(first)
-    return results
+    :param sdk_path: The path of the Android SDK to use.
+    :param device_name: The name of the device in a format usable by `adb -s`.
+    :param apk_path: The path of the Android APK file to install.
+
+    Returns `None` on success; raises an exception on failure.
+    """
+    try:
+        output = sub.check_output([str(sdk_path / 'platform-tools' / 'adb'), '-s', device_name, str(apk_path)])
+    except subprocess.CalledProcessError as e:
+        output_lines = e.output.split('\n')
+        if any((line.startswith('error: device ') and line.endswith("'not found"):
+            raise BriefcaseCommandError("""\
+Android device called {device_name} not found. If you created the
+`robotfriend` emulator," you can start it by running this command.
+
+$ {emulator} -avd robotfriend &
+
+Once it is running, find the device name in the first column of the
+output of the following command.
+
+$ {adb} devices -l
+""".format(
+        device_name=device_name,
+        adb=sdk_path / "platform-tools" / "adb",
+        emulator=sdk_path / "emulator" / "emulator"))
+        raise BriefcaseCommandError(
+            "Unable to launch app. Received this output from `adb`\n" +
+            e.output)

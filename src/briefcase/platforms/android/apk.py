@@ -164,7 +164,7 @@ class ApkBuildCommand(ApkMixin, BuildCommand):
 
 
 class ApkRunCommand(ApkMixin, RunCommand):
-    description = "Run a Linux AppImage."
+    description = "Run an Android APK."
 
     def add_options(self, parser):
         super().add_options(parser)
@@ -210,6 +210,7 @@ $ {adb} devices -l
             emulator=self.android_sdk_path / "emulator" / "emulator",
             tools_bin=self.android_sdk_path / "tools" / "bin",
         ))
+
         import pdb; pdb.set_trace()
         # TODO: Respect `-d`
         #
