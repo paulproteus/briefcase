@@ -16,7 +16,7 @@ from briefcase.commands import (
 )
 from briefcase.config import BaseConfig
 from briefcase.exceptions import BriefcaseCommandError, NetworkFailure
-
+from briefcase.integrations.adb import install_apk
 
 class ApkMixin:
     output_format = "apk"
@@ -210,6 +210,18 @@ $ {adb} devices -l
             emulator=self.android_sdk_path / "emulator" / "emulator",
             tools_bin=self.android_sdk_path / "tools" / "bin",
         ))
+
+        # Install the latest APK file onto the device.
+        install_apk(self.android_sdk_path, device, self.binary_path(app))
+
+
+        # `briefcase run android` assumes that the Android app uses
+        # `org.beeware.android.MainActivity` as the main activity. An Android
+        # app may have multiple launchable activities. If the Android app
+        # installs properly onto the target device, but it does not start, it
+        # is possible that the cause is that the main activity has a different
+        # name.
+
 
         import pdb; pdb.set_trace()
         # TODO: Respect `-d`
