@@ -53,13 +53,13 @@ class ApkMixin:
         return "https://dl.google.com/android/repository/" + (
             "sdk-tools-{os}-4333796.zip".format(os=self.host_os.lower()))
 
-    def _verify_python_version(self):
+    def verify_python_version(self):
         if self.python_version_tag != "3.7":
             raise BriefcaseCommandError("""\
 Found Python version {self.python_version_tag}. Android packaging currently
 requires Python 3.7.""".format(self=self))
 
-    def _verify_sdk(self):
+    def verify_sdk(self):
         # If the SDK tools don't exist or aren't executable, install the SDK.
         # TODO: Reconsider this for Windows.
         tools_path = self.sdk_path / "tools" / "bin"
@@ -90,7 +90,7 @@ Partial download? Remove it, then try again.""".format(
         for binpath in tools_path.glob('*'):
             binpath.chmod(0o755)
 
-    def _verify_license(self):
+    def verify_license(self):
         license_path = self.sdk_path / "licenses" / "android-sdk-license"
         if license_path.exists():
             return
@@ -121,9 +121,9 @@ connection.""")
         Verify that we the Android APK tools in `briefcase` will operate on
         this system, downloading tools as needed.
         """
-        self._verify_python_version()
-        self._verify_sdk()
-        self._verify_license()
+        self.verify_python_version()
+        self.verify_sdk()
+        self.verify_license()
 
 
 class ApkCreateCommand(ApkMixin, CreateCommand):
