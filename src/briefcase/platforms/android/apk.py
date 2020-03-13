@@ -166,13 +166,14 @@ class ApkRunCommand(ApkMixin, RunCommand):
             return
 
         print("Ensuring we have the Android emulator and system image...")
-        self.subprocess.check_output([
-            self.sdk_path / "tools" / "bin" / "sdkmanager",
-            "platforms;android-28",
-            "system-images;android-28;default;x86",
-            "emulator",
-            "platform-tools"],
-            stderr=self.subprocess.STDOUT)
+        try:
+            self.subprocess.check_output([
+                self.sdk_path / "tools" / "bin" / "sdkmanager",
+                "platforms;android-28",
+                "system-images;android-28;default;x86",
+                "emulator",
+                "platform-tools"],
+                stderr=self.subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             raise BriefcaseCommandError(
                 """\
