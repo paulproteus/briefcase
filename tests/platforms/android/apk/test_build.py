@@ -24,8 +24,7 @@ def build_command(tmp_path, first_app_config):
     return command
 
 
-def test_linuxdeploy_download_url(build_command):
-    assert (
-        build_command.linuxdeploy_download_url
-        == 'https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-wonky.AppImage'
+def test_sdk_url(build_command):
+    assert (build_command.sdk_url == (
+        'https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip')
     )
