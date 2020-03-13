@@ -145,11 +145,10 @@ class ApkBuildCommand(ApkMixin, BuildCommand):
         """
         print("[{app.app_name}] Building Android APK...".format(app=app))
         try:
+            env = {**self.os.environ, 'ANDROID_SDK_ROOT': str(self.sdk_path)}
             self.subprocess.check_output(
                 ["./gradlew", "assembleDebug"],
-                env=dict(list(
-                    self.os.environ.items()) +
-                    [('ANDROID_SDK_ROOT', str(self.sdk_path))]),
+                env=env,
                 cwd=str(self.bundle_path(app)),
                 stderr=self.subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
