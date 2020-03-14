@@ -22,6 +22,7 @@ def build_command(tmp_path, first_app_config):
     command.sys = mock.MagicMock()
     command.sys.version_info.major = 3
     command.sys.version_info.minor = 7
+    command.requests = mock.MagicMock()
     command.subprocess = mock.MagicMock()
     return command
 

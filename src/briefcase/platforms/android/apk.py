@@ -51,6 +51,8 @@ class ApkMixin:
         # The URLs described by the pattern below have existed since
         # approximately 2017, and the code they download has a built-in
         # updater. I hope they will work for many years.
+        return "https://dl.google.com/android/repository/" + (
+            "sdk-tools-{os}-4333796.zip".format(os=self.host_os.lower()))
 
     def verify_python_version(self):
         if self.python_version_tag != "3.7":
