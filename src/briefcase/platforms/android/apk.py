@@ -23,6 +23,12 @@ class ApkMixin:
     output_format = "apk"
     platform = "android"
 
+    def __init__(self):
+        super().__init__()
+        self.sdk_path = Path.home() / ".briefcase" / "tools" / "android_sdk"
+        self.sdk_url = "https://dl.google.com/android/repository/" + (
+            "sdk-tools-{os}-4333796.zip".format(os=self.host_os.lower()))
+
     def binary_path(self, app):
         return (
             self.platform_path
@@ -39,10 +45,6 @@ class ApkMixin:
         return self.binary_path(app)
 
     @property
-    def sdk_path(self):
-        return Path.home() / ".briefcase" / "tools" / "android_sdk"
-
-    @property
     def sdk_url(self):
         # TODO: Add test validating that, if this is mocked out for a sentinel
         # ZIP file, we surely unpack it into sdk_path.
@@ -50,8 +52,6 @@ class ApkMixin:
         # The URLs described by the pattern below have existed since
         # approximately 2017, and the code they download has a built-in
         # updater. I hope they will work for many years.
-        return "https://dl.google.com/android/repository/" + (
-            "sdk-tools-{os}-4333796.zip".format(os=self.host_os.lower()))
 
     def verify_python_version(self):
         if self.python_version_tag != "3.7":
@@ -65,7 +65,9 @@ requires Python 3.7.""".format(self=self))
         tools_path = self.sdk_path / "tools" / "bin"
         tools_ok = tools_path.exists() and all([
             S_IMODE(tool.stat().st_mode) == 0o755
-            for tool in tools_path.glob('*')])
+            for tool in tools_path.glob('*')]) and (
+                tools_path / "sdkmanager"
+            ).exists()
         if tools_ok:
             return
 
