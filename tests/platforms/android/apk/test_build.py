@@ -15,7 +15,7 @@ def build_command(tmp_path, first_app_config):
         base_path=tmp_path,
         apps={'first': first_app_config}
     )
-    command.sdk_path = self.base_path / 'sdk_path'
+    command.sdk_path = tmp_path / 'sdk_path'
     command.host_os = 'Linux'
     command.os = mock.MagicMock()
     command.os.environ = {}
