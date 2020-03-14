@@ -1,12 +1,18 @@
 import subprocess
 from pathlib import Path
 from unittest import mock
+from zipfile import ZipFile
 
 import pytest
 from requests import exceptions as requests_exceptions
 
 from briefcase.exceptions import BriefcaseCommandError
 from briefcase.platforms.android.apk import ApkBuildCommand
+
+
+def create_sentinel_zipfile(path: Path):
+    with ZipFile(str(path), 'w') as out:
+        out.writestr('sentinel.txt', '')
 
 
 @pytest.fixture
@@ -45,7 +51,27 @@ def test_require_python_37(build_command, major, minor):
         build_command.verify_python_version()
 
 
-def test_verify_sdk_succeeds_immediately_when_tools_exist(build_command):
-    build_command.sdk_path.mkdir()
+def test_verify_tools_succeeds_immediately_when_tools_exist(build_command):
+    tools_bin = build_command.sdk_path / "tools" / "bin"
+    tools_bin.mkdir(parents=True, mode=0o755)
+    (tools_bin / "sdkmanager").touch(mode=0o755)
+    licenses = build_command.sdk_path / "licenses"
+    licenses.mkdir(parents=True, mode=0o755)
+    (licenses / "android-sdk-license").touch()
+
+    # Expect verify_tools() to raise no exceptions, and expect no requests
+    # or subprocesses.
     build_command.verify_tools()
-    assert something
+    build_command.requests.get.assert_not_called()
+    build_command.subprocess.run.assert_not_called()
+    build_command.subprocess.check_output.assert_not_called()
+
+
+def test_verify_tools_downloads_sdk(build_command):
+    # TODO: Add parameterization for mode 644 and/or absent sdkmanager.
+    # Expect verify_tools() to raise no exceptions, and expect no requests
+    # or subprocesses.
+    build_command.verify_tools()
+    build_command.requests.get.assert_not_called()
+    build_command.subprocess.run.assert_not_called()
+    build_command.subprocess.check_output.assert_not_called()
