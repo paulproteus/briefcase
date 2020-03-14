@@ -23,9 +23,10 @@ class ApkMixin:
     output_format = "apk"
     platform = "android"
 
-    def __init__(self):
-        super().__init__()
-        self.sdk_path = Path.home() / ".briefcase" / "tools" / "android_sdk" 
+    def __init__(self, *_ignored_args, **_ignored_kwargs):
+        # Ignore extra args & kwargs; they are usually targeted to the other
+        # classes we are mixed-in to.
+        self.sdk_path = Path.home() / ".briefcase" / "tools" / "android_sdk"
 
     def binary_path(self, app):
         return (
