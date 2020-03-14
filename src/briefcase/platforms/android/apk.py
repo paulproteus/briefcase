@@ -25,9 +25,7 @@ class ApkMixin:
 
     def __init__(self):
         super().__init__()
-        self.sdk_path = Path.home() / ".briefcase" / "tools" / "android_sdk"
-        self.sdk_url = "https://dl.google.com/android/repository/" + (
-            "sdk-tools-{os}-4333796.zip".format(os=self.host_os.lower()))
+        self.sdk_path = Path.home() / ".briefcase" / "tools" / "android_sdk" 
 
     def binary_path(self, app):
         return (
