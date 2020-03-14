@@ -43,8 +43,7 @@ class ApkMixin:
     def distribution_path(self, app):
         return self.binary_path(app)
 
-    @property
-    def sdk_url(self):
+    def sdk_url(self, host_os):
         # TODO: Add test validating that, if this is mocked out for a sentinel
         # ZIP file, we surely unpack it into sdk_path.
         """The Android SDK URL appropriate to this operating system."""
@@ -52,7 +51,7 @@ class ApkMixin:
         # approximately 2017, and the code they download has a built-in
         # updater. I hope they will work for many years.
         return "https://dl.google.com/android/repository/" + (
-            "sdk-tools-{os}-4333796.zip".format(os=self.host_os.lower()))
+            "sdk-tools-{os}-4333796.zip".format(os=host_os.lower()))
 
     def verify_python_version(self):
         if self.python_version_tag != "3.7":
@@ -75,7 +74,7 @@ requires Python 3.7.""".format(self=self))
         print("Setting up Android SDK...")
         try:
             sdk_zip_path = self.download_url(
-                url=self.sdk_url,
+                url=self.sdk_url(self.host_os),
                 download_path=Path.home() / ".briefcase" / "tools",
             )
         except requests_exceptions.ConnectionError:
@@ -200,7 +199,6 @@ Error while installing Android platform tools. Full gradle output:\n\n""" +
         :param app: The config object for the app
         :param device: The device to target. If ``None``, the user will
             be asked to re-run the command selecting a specific device.
-        :param base_path: The path to the project directory.
         """
         if device is None:
             raise BriefcaseCommandError("""\

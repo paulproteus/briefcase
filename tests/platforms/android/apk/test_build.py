@@ -1,4 +1,5 @@
 import subprocess
+from io import StringIO
 from pathlib import Path
 from unittest import mock
 from zipfile import ZipFile
@@ -11,8 +12,10 @@ from briefcase.platforms.android.apk import ApkBuildCommand
 
 
 def create_sentinel_zipfile(path: Path):
-    with ZipFile(str(path), 'w') as out:
-        out.writestr('sentinel.txt', '')
+    out = StringIO()
+    with ZipFile(out, 'w') as zipfile:
+        zipfile.writestr('sentinel.txt', '')
+    return out
 
 
 @pytest.fixture
@@ -21,6 +24,7 @@ def build_command(tmp_path, first_app_config):
         base_path=tmp_path,
         apps={'first': first_app_config}
     )
+    command.tmp_path = tmp_path
     command.sdk_path = tmp_path / 'sdk_path'
     command.host_os = 'Linux'
     command.os = mock.MagicMock()
@@ -34,9 +38,8 @@ def build_command(tmp_path, first_app_config):
 
 
 def test_sdk_url(build_command):
-    assert (build_command.sdk_url == (
+    assert build_command.sdk_url(build_command.host_os) == (
         'https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip')
-    )
 
 
 def test_permit_python_37(build_command):
@@ -68,6 +71,12 @@ def test_verify_tools_succeeds_immediately_when_tools_exist(build_command):
 
 
 def test_verify_tools_downloads_sdk(build_command):
+    sdk_zip_path = (build_command.tmp_path / "sdk.zip").resolve()
+    create_sentinel_zipfile(sdk_zip_path)
+    response = mock.MagicMock()
+    response.status_code = 404
+    build_command.requests.get.return_value = 
+    build_command.sdk_url = lambda *args: 'file://' + str(sdk_zip_path)
     # TODO: Add parameterization for mode 644 and/or absent sdkmanager.
     # Expect verify_tools() to raise no exceptions, and expect no requests
     # or subprocesses.
